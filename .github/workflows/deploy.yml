@@ -50,9 +50,13 @@ jobs:
 
           # Thêm Public IP của EC2 vào danh sách known_hosts
           ssh-keyscan -H ${{ secrets.EC2_PUBLIC_IP }} >> ~/.ssh/known_hosts
-
-          # Kết nối SSH và thực hiện các lệnh trên EC2
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ec2-user@${{ secrets.EC2_PUBLIC_IP }} << EOF
+            # Kiểm tra và dừng tiến trình chiếm port 8080
+            sudo fuser -k 8080/tcp || true
+
+            # Tải file JAR từ S3
             aws s3 cp s3://hoatruong-bucket/spring-boot-2-hello-world-1.0.2-SNAPSHOT.jar /home/ec2-user/
+
+            # Restart service
             sudo systemctl restart my-spring-boot-app
           EOF
