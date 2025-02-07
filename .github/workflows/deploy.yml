@@ -24,15 +24,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # 3. Kiểm tra code bằng Maven (Static Analysis)
-      - name: Run Maven Check
+      # 3. Build Maven Project
+      - name: Build Maven Project
         run: |
           chmod +x mvnw
-          ./mvnw clean validate
-        env:
-          MAVEN_OPTS: '-Dmaven.test.failure.ignore=true'
+          ./mvnw clean package -DskipTests
 
-      # 4. Chạy Unit Test
+      # 4. Kiểm tra Unit Tests
       - name: Run Unit Tests
         run: |
           ./mvnw test
@@ -48,7 +46,7 @@ jobs:
           echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/spring-demo:latest
 
-      # 7. Deploy lên ECS (Chỉ cập nhật image, không cần `task-definition.json`)
+      # 7. Deploy lên ECS
       - name: Deploy to ECS
         run: |
           aws ecs update-service \
@@ -60,7 +58,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: 'ap-southeast-2'
 
-      # 8. Thông báo thành công (Optional)
+      # 8. Thông báo thành công
       - name: Notify Success
         if: success()
         run: echo "Deployment Successful!"
