@@ -40,13 +40,13 @@ jobs:
       # 5. Build Docker Image
       - name: Build Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/goal-tracker:latest .
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/spring-demo:latest .
 
       # 6. Push Docker Image lên Docker Hub
       - name: Push Docker Image to Docker Hub
         run: |
           echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/goal-tracker:latest
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/spring-demo:latest
 
       # 7. Deploy lên ECS (Chỉ cập nhật image, không cần `task-definition.json`)
       - name: Deploy to ECS
